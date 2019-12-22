@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Activity } from './activity.model';
@@ -71,7 +71,15 @@ export class ActivitiesService {
 
   async deleteActivity(mongoIdDTO: MongoIdDTO) {
     const { id } = mongoIdDTO;
-    await this.activityModel.deleteOne({ _id: id });
-    return id;
+    const deleted = await this.activityModel.deleteOne({ _id: id });
+
+    if (deleted.deletedCount) {
+      return id;
+    }
+
+    throw new NotFoundException({
+      statusCode: 404,
+      error: `Activity ${id} not found`,
+    });
   }
 }
