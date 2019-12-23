@@ -4,14 +4,17 @@ import { MongoError } from 'mongodb';
 export class MongoFilter implements ExceptionFilter {
   catch(exception: MongoError, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse();
-    if (exception.code === 11000) {
-      response
-        .status(400)
-        .json({ message: 'User already exists.', statusCode: 400 });
-    } else {
-      response
-        .status(500)
-        .json({ message: 'Internal error.', statusCode: 500 });
+    switch (exception.code) {
+      case 11000:
+        return response.status(409).json({
+          message: `User ${exception.keyValue.email} already exists.`,
+          statusCode: 409,
+        });
+
+      default:
+        return response
+          .status(500)
+          .json({ message: 'Internal error.', statusCode: 500 });
     }
   }
 }

@@ -1,6 +1,6 @@
-import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-const ActivitySchema = new mongoose.Schema(
+const ActivitySchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String },
@@ -9,7 +9,8 @@ const ActivitySchema = new mongoose.Schema(
       required: true,
       enum: ['EXPENDITURE', 'REVENUE', 'SAVING', 'INVESTMENT'],
     },
-    amount: { type: mongoose.Schema.Types.Decimal128 },
+    amount: { type: Schema.Types.Decimal128 },
+    owner: { type: Schema.ObjectId, ref: 'User', required: true },
   },
   {
     timestamps: true,

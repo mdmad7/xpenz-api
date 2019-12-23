@@ -7,10 +7,13 @@ import {
   Query,
   Param,
   Delete,
+  Request,
   NotFoundException,
   Patch,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDTO } from './dto/create-activity.dto';
 import { BadRequestFilter } from 'src/exceptions/bad-request.filters';
@@ -23,10 +26,16 @@ import { Activity } from './activity.model';
 @UseFilters(BadRequestFilter)
 export class ActivitiesController {
   constructor(private activitiesService: ActivitiesService) {}
+
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  async findActivities(@Query() fetchActivitiesDTO: FetchActivitiesDTO) {
+  async findActivities(
+    @Request() req,
+    @Query() fetchActivitiesDTO: FetchActivitiesDTO,
+  ) {
     const data = await this.activitiesService.findActivities(
       fetchActivitiesDTO,
+      req.user,
     );
     return {
       statusCode: 200,
@@ -34,10 +43,13 @@ export class ActivitiesController {
       ...data,
     };
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Get('/:id')
-  async findActivity(@Param() mongoIdDTO: MongoIdDTO) {
-    const data = await this.activitiesService.findActivity(mongoIdDTO);
+  async findActivity(@Request() req, @Param() mongoIdDTO: MongoIdDTO) {
+    const data = await this.activitiesService.findActivity(
+      mongoIdDTO,
+      req.user,
+    );
     if (!data) {
       throw new NotFoundException({
         statusCode: 404,
@@ -51,9 +63,16 @@ export class ActivitiesController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  async createActivity(@Body() createActivityDTO: CreateActivityDTO) {
-    const data = await this.activitiesService.createActivity(createActivityDTO);
+  async createActivity(
+    @Request() req,
+    @Body() createActivityDTO: CreateActivityDTO,
+  ) {
+    const data = await this.activitiesService.createActivity(
+      createActivityDTO,
+      req.user,
+    );
     return {
       statusCode: 201,
       message: 'Create successful',
@@ -61,17 +80,23 @@ export class ActivitiesController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete('/:id')
-  async deleteActivity(@Param() mongoIdDTO: MongoIdDTO) {
-    const data = await this.activitiesService.deleteActivity(mongoIdDTO);
+  async deleteActivity(@Request() req, @Param() mongoIdDTO: MongoIdDTO) {
+    const data = await this.activitiesService.deleteActivity(
+      mongoIdDTO,
+      req.user,
+    );
     return {
       statusCode: 200,
       message: `Activity ${data} deleted successfully`,
     };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch('/:id')
   async updateActivity(
+    @Request() req,
     @Param() mongoIdDTO: MongoIdDTO,
     @Body() updateActivityDTO: UpdateActivityDTO,
   ) {
@@ -88,7 +113,17 @@ export class ActivitiesController {
     data = await this.activitiesService.updateActivity(
       mongoIdDTO,
       updateActivityDTO,
+      req.user,
     );
+
+    if (!data) {
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'Not Found',
+        error: `Activity with provided id does not exist`,
+      });
+    }
+
     return {
       statusCode: 200,
       message: 'Update successful',

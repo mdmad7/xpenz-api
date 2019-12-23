@@ -23,7 +23,6 @@ export class BadRequestFilter implements ExceptionFilter {
         }, []),
       });
     }
-    // console.log(exception);
     return response.status(400).json(exception.getResponse());
   }
 }
