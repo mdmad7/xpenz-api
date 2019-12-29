@@ -2,6 +2,7 @@ import {
   Controller,
   UseFilters,
   Post,
+  Get,
   Body,
   UseGuards,
   Request,
@@ -26,5 +27,11 @@ export class AuthController {
   @Post('/login')
   async login(@Request() req) {
     return this.authService.login(req.user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/profile')
+  async profile(@Request() req) {
+    return this.authService.profile(req.user);
   }
 }

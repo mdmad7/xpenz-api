@@ -41,4 +41,11 @@ export class AuthService {
       token: this.jwtService.sign(payload),
     };
   }
+
+  async profile(user: any) {
+    const foundUser = await this.usersService.findUser(user.email);
+    const obj = { ...foundUser._doc, id: foundUser._doc._id };
+    const { password, _id, ...rest } = obj;
+    return rest;
+  }
 }

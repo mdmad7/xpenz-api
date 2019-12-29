@@ -34,6 +34,7 @@ export class ActivitiesService {
       .find(searchObj)
       .limit(limit)
       .skip(skip)
+      .sort('-createdAt')
       .exec();
 
     const total = await this.activityModel.countDocuments(searchObj);
