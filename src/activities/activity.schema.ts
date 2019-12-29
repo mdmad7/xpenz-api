@@ -7,7 +7,7 @@ const ActivitySchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ['EXPENDITURE', 'REVENUE', 'SAVING', 'INVESTMENT'],
+      enum: ['EXPENDITURE', 'REVENUE', 'SAVINGS', 'INVESTMENT'],
     },
     amount: { type: Schema.Types.Decimal128 },
     owner: { type: Schema.ObjectId, ref: 'User', required: true },

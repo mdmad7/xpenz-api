@@ -7,6 +7,6 @@ export class UpdateActivityDTO {
   @IsOptional() @IsNumberString() amount: string;
   @IsOptional()
   @IsString()
-  @IsIn(['EXPENDITURE', 'REVENUE', 'SAVING', 'INVESTMENT'])
+  @IsIn(['EXPENDITURE', 'REVENUE', 'SAVINGS', 'INVESTMENT'])
   type: ActTypeENUM;
 }

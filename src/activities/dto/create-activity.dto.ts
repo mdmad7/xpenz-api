@@ -7,7 +7,7 @@ export class CreateActivityDTO {
   @IsNotEmpty() @IsNumberString() amount: string;
   @IsString()
   @IsNotEmpty()
-  @IsIn(['EXPENDITURE', 'REVENUE', 'SAVING', 'INVESTMENT'])
+  @IsIn(['EXPENDITURE', 'REVENUE', 'SAVINGS', 'INVESTMENT'])
   type: ActTypeENUM;
   // @IsNotEmpty() @IsString() @IsMongoId() owner: string;
 }

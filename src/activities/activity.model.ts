@@ -11,6 +11,6 @@ export interface Activity {
 export enum ActTypeENUM {
   EXPENDITURE = 'EXPENDITURE',
   REVENUE = 'REVENUE',
-  SAVING = 'SAVING',
+  SAVINGS = 'SAVINGS',
   INVESTMENT = 'INVESTMENT',
 }
