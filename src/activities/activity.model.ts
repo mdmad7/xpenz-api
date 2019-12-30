@@ -13,8 +13,6 @@ export interface Activity {
 export enum ActTypeENUM {
   EXPENDITURE = 'EXPENDITURE',
   REVENUE = 'REVENUE',
-  SAVINGS = 'SAVINGS',
-  INVESTMENT = 'INVESTMENT',
 }
 
 export enum CategoryENUM {

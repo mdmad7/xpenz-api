@@ -11,9 +11,11 @@ export class UpdateActivityDTO {
   @IsOptional() @IsString() title: string;
   @IsOptional() @IsString() description: string;
   @IsOptional() @IsNumberString() amount: string;
+  @IsOptional() @IsString() account: string;
+
   @IsOptional()
   @IsString()
-  @IsIn(['EXPENDITURE', 'REVENUE', 'SAVINGS', 'INVESTMENT'])
+  @IsIn(['EXPENDITURE', 'REVENUE'])
   type: ActTypeENUM;
   @IsString()
   @IsOptional()

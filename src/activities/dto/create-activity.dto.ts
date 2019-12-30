@@ -13,9 +13,10 @@ export class CreateActivityDTO {
   @IsNotEmpty() @IsString() title: string;
   @IsString() description: string;
   @IsNotEmpty() @IsNumberString() amount: string;
+  @IsOptional() @IsString() account: string;
   @IsString()
   @IsNotEmpty()
-  @IsIn(['EXPENDITURE', 'REVENUE', 'SAVINGS', 'INVESTMENT'])
+  @IsIn(['EXPENDITURE', 'REVENUE'])
   type: ActTypeENUM;
   @IsString()
   @IsNotEmpty()

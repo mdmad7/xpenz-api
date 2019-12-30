@@ -11,6 +11,7 @@ export class FetchActivitiesDTO {
   @IsOptional() @IsNumberString() page: string;
   @IsOptional() @IsNumberString() size: string;
   @IsOptional() @IsString() search: string;
+  @IsOptional() @IsString() account: string;
   @IsOptional() @IsString() category: CategoryENUM;
   @IsOptional() @IsISO8601() @IsString() date: string;
   @IsOptional() @IsString() type: ActTypeENUM;

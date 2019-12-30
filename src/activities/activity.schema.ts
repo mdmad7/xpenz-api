@@ -7,7 +7,7 @@ const ActivitySchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ['EXPENDITURE', 'REVENUE', 'SAVINGS', 'INVESTMENT'],
+      enum: ['EXPENDITURE', 'REVENUE'],
     },
     category: {
       type: String,
