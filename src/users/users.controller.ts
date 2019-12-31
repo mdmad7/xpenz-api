@@ -16,8 +16,10 @@ import {
   Patch,
   BadRequestException,
   Delete,
+  Post,
 } from '@nestjs/common';
 import { MongoIdDTO } from 'src/activities/dto/mongo-id.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Controller('users')
 @UseFilters(BadRequestFilter, MongoFilter)
@@ -25,7 +27,50 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch('/:id/accounts')
+  @Patch('/:id')
+  async editUser(
+    @Body() updateUserDTO: UpdateUserDTO,
+    @Request() req: any,
+    @Param('id') id: string,
+  ) {
+    if (req.user.id !== id) {
+      throw new UnauthorizedException({
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: `User not authorized to update`,
+      });
+    }
+
+    if (!Object.values(updateUserDTO).length) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'Bad Request',
+        error: `Must provide at least one parameter to update`,
+      });
+    }
+
+    const user = await this.usersService.editUser(id, updateUserDTO);
+
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'Not Found',
+        error: `User with provided id does not exist`,
+      });
+    }
+
+    const obj = { ...user._doc, id: user._doc._id };
+    const { password, _id, accounts, ...data } = obj;
+
+    return {
+      statusCode: 200,
+      message: 'Update successful',
+      data,
+    };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/:id/accounts')
   async createAccount(
     @Body() createAccountDto: CreateAccountDTO,
     @Request() req,

@@ -46,6 +46,7 @@ const UserSchema = new Schema(
     },
     gender: {
       type: String,
+      default: 'Unspecified',
       enum: ['Male', 'Female', 'Unspecified'],
     },
     accounts: {

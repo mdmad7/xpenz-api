@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import { User } from './user.model';
 import { CreateUserDTO } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +33,12 @@ export class UsersService {
     }
     const createdUser = new this.userModel(createUserDTO);
     return await createdUser.save();
+  }
+
+  async editUser(id: string, updateUserDTO: UpdateUserDTO) {
+    return await this.userModel.findOneAndUpdate({ _id: id }, updateUserDTO, {
+      new: true,
+    });
   }
 
   async createAccount(createAccountDTO: CreateAccountDTO, user: any) {
