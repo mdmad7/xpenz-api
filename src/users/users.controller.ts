@@ -6,7 +6,6 @@ import { CreateAccountDTO } from './dto/create-account.dto';
 import { UsersService } from './users.service';
 import {
   Controller,
-  Post,
   Body,
   UseFilters,
   UseGuards,
@@ -15,6 +14,8 @@ import {
   UnauthorizedException,
   NotFoundException,
   Patch,
+  BadRequestException,
+  Delete,
 } from '@nestjs/common';
 import { MongoIdDTO } from 'src/activities/dto/mongo-id.dto';
 
@@ -44,17 +45,17 @@ export class UsersController {
     );
 
     if (!data) {
-      throw new NotFoundException({
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'User not found',
+      throw new BadRequestException({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Action could not be completed',
       });
     }
 
     return {
       statusCode: 200,
       message: 'Successful',
-      data: data.accounts,
+      data: data.accounts[data.accounts.length - 1],
     };
   }
 
@@ -81,17 +82,47 @@ export class UsersController {
     );
 
     if (!data) {
-      throw new NotFoundException({
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'User not found',
+      throw new BadRequestException({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Action could not be completed',
       });
     }
 
     return {
       statusCode: 200,
       message: 'Successful',
-      data: data.accounts,
+      data: data.accounts.find(acc => acc.id === accountId),
+    };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/:id/accounts/:accountId')
+  async deleteAccount(
+    @Request() req,
+    @Param('id') id,
+    @Param('accountId') accountId,
+  ) {
+    if (req.user.id !== id) {
+      throw new UnauthorizedException({
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: `User id mismatch`,
+      });
+    }
+
+    const data = await this.usersService.deleteAccount(req.user, accountId);
+    if (!data) {
+      throw new BadRequestException({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Action could not be completed',
+      });
+    }
+
+    return {
+      statusCode: 200,
+      message: 'Successful',
     };
   }
 }

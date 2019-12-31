@@ -1,6 +1,10 @@
 import { UpdateAccountDTO } from './dto/update-account.dto';
 import { CreateAccountDTO } from './dto/create-account.dto';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.model';
@@ -65,5 +69,20 @@ export class UsersService {
       },
       { new: true },
     );
+  }
+
+  async deleteAccount(user: any, accountId: string) {
+    const theOne = await this.userModel.findById({ _id: user.id });
+    try {
+      theOne.accounts.id(accountId).remove();
+    } catch (error) {
+      throw new NotFoundException({
+        statusCode: 404,
+        error: 'Not found',
+        message: 'Requested account not found',
+      });
+    }
+    const updated = await theOne.save();
+    return updated;
   }
 }
