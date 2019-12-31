@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { UpdateAccountDTO } from './dto/update-account.dto';
+import { CreateAccountDTO } from './dto/create-account.dto';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.model';
 import { CreateUserDTO } from './dto/create-user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +19,51 @@ export class UsersService {
   }
 
   async create(createUserDTO: CreateUserDTO): Promise<any> {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(createUserDTO.password, salt);
+      createUserDTO.password = passwordHash;
+    } catch (error) {
+      throw new BadRequestException({ info: error });
+    }
     const createdUser = new this.userModel(createUserDTO);
     return await createdUser.save();
+  }
+
+  async createAccount(createAccountDTO: CreateAccountDTO, user: any) {
+    const theOne = await this.userModel.findById({ _id: user.id });
+    if (theOne.accounts.length >= 10) {
+      throw new BadRequestException({
+        statusCode: 400,
+        error: 'Bad request',
+        message: 'Accounts limit exceeded',
+      });
+    }
+
+    theOne.accounts.push(createAccountDTO);
+    const updated = await theOne.save();
+    return updated;
+  }
+
+  async updateAccount(
+    updateAccountDto: UpdateAccountDTO,
+    user: any,
+    accountId: string,
+  ) {
+    const setObj = Object.keys(updateAccountDto).reduce((acc, cur) => {
+      acc[`accounts.$.${cur}`] = updateAccountDto[cur];
+      return acc;
+    }, {});
+
+    return await this.userModel.findOneAndUpdate(
+      {
+        _id: user.id,
+        'accounts._id': accountId,
+      },
+      {
+        $set: { ...setObj },
+      },
+      { new: true },
+    );
   }
 }

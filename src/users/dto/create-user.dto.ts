@@ -18,3 +18,4 @@ export class CreateUserDTO {
   @IsNotEmpty() @IsString() @Length(6) password: string;
   @IsNotEmpty() @IsISO8601() dob: string;
 }
+// $2a$10$3z6jFxPxZhKq5BUzfKAhwOEYvCC3oHcwgEUmy/rTphnragxIGelIG

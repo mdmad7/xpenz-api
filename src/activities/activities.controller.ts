@@ -13,6 +13,7 @@ import {
   BadRequestException,
   UseGuards,
 } from '@nestjs/common';
+
 import { AuthGuard } from '@nestjs/passport';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDTO } from './dto/create-activity.dto';

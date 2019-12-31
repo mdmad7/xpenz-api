@@ -2,6 +2,32 @@ import { Schema } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { UnauthorizedException, BadRequestException } from '@nestjs/common';
 
+const AccountSchema = new Schema(
+  {
+    name: { type: String },
+    starterAmount: { type: Schema.Types.Decimal128 },
+    theme: { type: String, default: 'default' },
+    type: {
+      type: String,
+      required: true,
+      enum: ['DIGITAL WALLET', 'BANK', 'CREDIT CARD'],
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
+);
+
+AccountSchema.methods.toJSON = function() {
+  const obj = this.toObject();
+  delete obj._id;
+  obj.starterAmount = obj.starterAmount.toString();
+  return obj;
+};
+
 const UserSchema = new Schema(
   {
     firstname: { type: String, required: true },
@@ -9,6 +35,7 @@ const UserSchema = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -21,6 +48,9 @@ const UserSchema = new Schema(
       type: String,
       enum: ['Male', 'Female', 'Unspecified'],
     },
+    accounts: {
+      type: [AccountSchema],
+    },
   },
   {
     timestamps: true,
@@ -29,20 +59,6 @@ const UserSchema = new Schema(
     toObject: { virtuals: true, getters: true },
   },
 );
-
-UserSchema.pre('save', async function savePassword() {
-  if (this.password) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(this.password, salt);
-      this.password = passwordHash;
-    } catch (error) {
-      throw new BadRequestException({ info: error });
-    }
-  } else {
-    return false;
-  }
-});
 
 UserSchema.methods.isValidPassword = async function comparePassword(
   newPassword,

@@ -15,3 +15,19 @@ export enum GenderENUM {
   Female = 'Female',
   Unspecified = 'Unspecified',
 }
+
+export interface Account {
+  id: string;
+  name: string;
+  starterAmount: string;
+  theme: string;
+  type: AccountTypeENUM;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export enum AccountTypeENUM {
+  Male = 'Male',
+  Female = 'Female',
+  Unspecified = 'Unspecified',
+}

@@ -37,6 +37,7 @@ const ActivitySchema = new Schema(
       ],
     },
     amount: { type: Schema.Types.Decimal128 },
+    account: { type: Schema.ObjectId, ref: 'Account' },
     owner: { type: Schema.ObjectId, ref: 'User', required: true },
     date: { type: Date, required: true },
   },
@@ -51,7 +52,7 @@ const ActivitySchema = new Schema(
 ActivitySchema.index({ title: 'text', description: 'text' });
 
 ActivitySchema.methods.toJSON = function() {
-  let obj = this.toObject();
+  const obj = this.toObject();
   delete obj._id;
   obj.amount = obj.amount.toString();
   return obj;
