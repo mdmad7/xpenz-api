@@ -1,9 +1,13 @@
 import { UpdateAccountDTO } from './dto/update-account.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { MongoFilter } from './../exceptions/mongo.filters';
 import { BadRequestFilter } from './../exceptions/bad-request.filters';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { UsersService } from './users.service';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+
 import {
   Controller,
   Body,
@@ -17,6 +21,8 @@ import {
   BadRequestException,
   Delete,
   Post,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { MongoIdDTO } from 'src/activities/dto/mongo-id.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
@@ -65,6 +71,64 @@ export class UsersController {
     return {
       statusCode: 200,
       message: 'Update successful',
+      data,
+    };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/:id/avatar')
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: diskStorage({
+        destination: './uploads/avatars/tmp',
+        filename: (req, file, cb) => {
+          return cb(null, `${req.user.id}${extname(file.originalname)}`);
+        },
+      }),
+      limits: { fileSize: 5000000 },
+      fileFilter(req, file, cb) {
+        const filetypes = /jpeg|jpg|png/;
+        const ext = filetypes.test(extname(file.originalname).toLowerCase());
+        const mime = filetypes.test(file.mimetype);
+        if (mime && ext) {
+          return cb(null, true);
+        } else {
+          cb(
+            new BadRequestException({
+              statusCode: 400,
+              error: 'Bad Request',
+              message: 'Unsupported file uploaded',
+            }),
+            false,
+          );
+        }
+      },
+    }),
+  )
+  async uploadAvatar(
+    @UploadedFile() avatar,
+    @Request() req,
+    @Param('id') id: string,
+  ) {
+    const user = await this.usersService.uploadAvatar(
+      req.file.path,
+      req.user.id,
+    );
+
+    if (!user) {
+      throw new BadRequestException({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'User does not exist',
+      });
+    }
+
+    const obj = { ...user._doc, id: user._doc._id };
+    const { password, _id, accounts, ...data } = obj;
+
+    return {
+      statusCode: 200,
+      message: 'Password reset successful',
       data,
     };
   }

@@ -30,6 +30,9 @@ AccountSchema.methods.toJSON = function() {
 
 const UserSchema = new Schema(
   {
+    avatar: {
+      type: String,
+    },
     firstname: { type: String, required: true },
     lastname: { type: String, required: true },
     email: {

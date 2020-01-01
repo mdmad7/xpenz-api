@@ -107,7 +107,6 @@ export class AuthService {
       });
     }
     const passwordHash = await this.saltPassword(password);
-    console.log(user);
     return await this.usersService.changePassword(passwordHash, user.id);
   }
 

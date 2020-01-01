@@ -10,7 +10,7 @@ import { Model } from 'mongoose';
 import { User } from './user.model';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-
+import * as sharp from 'sharp';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
@@ -31,6 +31,23 @@ export class UsersService {
     return await this.userModel.findOneAndUpdate({ _id: id }, updateUserDTO, {
       new: true,
     });
+  }
+
+  async uploadAvatar(file, id) {
+    Promise.all(
+      [640, 240, 160].map(size => {
+        return sharp(file)
+          .resize(size, size)
+          .toFormat('jpeg')
+          .toFile(`./uploads/avatars/${id}-${size}.jpeg`);
+      }),
+    );
+
+    return await this.userModel.findByIdAndUpdate(
+      { _id: id },
+      { avatar: `/uploads/avatars/${id}-${640}.jpeg` },
+      { new: true },
+    );
   }
 
   async changePassword(password: string, id: string) {

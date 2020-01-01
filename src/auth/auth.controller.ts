@@ -6,6 +6,7 @@ import {
   Body,
   UseGuards,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { BadRequestFilter } from 'src/exceptions/bad-request.filters';
 import { AuthService } from './auth.service';
@@ -44,6 +45,14 @@ export class AuthController {
   @Post('passwordReset')
   async passwordReset(@Body('password') pass: string, @Request() req) {
     const user = await this.authService.passwordReset(pass, req.user);
+
+    if (!user) {
+      throw new BadRequestException({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'User cannot be found',
+      });
+    }
     const obj = { ...user._doc, id: user._doc._id };
     const { password, _id, accounts, ...data } = obj;
 
