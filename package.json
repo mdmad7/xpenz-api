@@ -28,6 +28,7 @@
     "@nestjs/mongoose": "^6.1.2",
     "@nestjs/passport": "^6.1.1",
     "@nestjs/platform-express": "^6.7.2",
+    "@nestjs/swagger": "^4.1.2",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
@@ -40,7 +41,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
-    "sharp": "^0.23.4"
+    "sharp": "^0.23.4",
+    "swagger-ui-express": "^4.1.2"
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.11",

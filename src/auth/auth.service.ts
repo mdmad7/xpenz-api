@@ -61,7 +61,7 @@ export class AuthService {
     });
 
     return {
-      statusCode: 200,
+      statusCode: 201,
       message: 'Signup request successful',
       data: { user: rest, token: loginDetails.data.token },
     };

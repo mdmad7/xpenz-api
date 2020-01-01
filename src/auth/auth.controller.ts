@@ -13,12 +13,21 @@ import { AuthService } from './auth.service';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { MongoFilter } from 'src/exceptions/mongo.filters';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('auth')
 @UseFilters(BadRequestFilter, MongoFilter)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiResponse({
+    status: 409,
+    description:
+      'This error will show when email provided already exists for a user',
+  })
+  @ApiResponse({ status: 201, description: 'User was successfully created' })
+  // @ApiResponse({ status: 400, description: 'Bad Request.' })
   @Post('/signup')
   async signup(@Body() createUserDTO: CreateUserDTO) {
     return this.authService.signup(createUserDTO);

@@ -1,4 +1,5 @@
 import { CategoryENUM } from './../activity.model';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsNumberString,
@@ -10,14 +11,48 @@ import {
 import { ActTypeENUM } from '../activity.model';
 
 export class CreateActivityDTO {
-  @IsNotEmpty() @IsString() title: string;
-  @IsString() description: string;
-  @IsNotEmpty() @IsNumberString() amount: string;
-  @IsOptional() @IsString() account: string;
+  @ApiProperty({
+    description: 'The title of the activity performed',
+    example: 'KFC Date',
+  })
+  @IsNotEmpty()
+  @IsString()
+  title: string;
+  @ApiPropertyOptional({
+    description: 'The description of the activity performed',
+    example: 'Went on a date with *** at KFC Accra mall branch',
+  })
+  @IsString()
+  description: string;
+  @ApiProperty({
+    description: 'Cost of expenditure or amount gained from revenue',
+    example: '85.45',
+  })
+  @IsNotEmpty()
+  @IsNumberString()
+  amount: string;
+  @ApiPropertyOptional({
+    description:
+      'Will default to "Wallet" if user has not created any accounts. Will be denoted by the id of the account, else "Wallet"',
+    example: '5e0cb79611fb1857323aca47',
+  })
+  @IsOptional()
+  @IsString()
+  account: string;
+  @ApiProperty({
+    description: 'Select the type of activity performed',
+    example: 'EXPENDITURE',
+    enum: ActTypeENUM,
+  })
   @IsString()
   @IsNotEmpty()
   @IsIn(['EXPENDITURE', 'REVENUE'])
   type: ActTypeENUM;
+  @ApiProperty({
+    description: 'Select the category activity falls under',
+    example: 'Food & Drinks',
+    enum: CategoryENUM,
+  })
   @IsString()
   @IsNotEmpty()
   @IsIn([
@@ -44,5 +79,13 @@ export class CreateActivityDTO {
     'Utilities',
   ])
   category: CategoryENUM;
-  @IsOptional() @IsString() @IsISO8601() date: string;
+  @ApiPropertyOptional({
+    description:
+      'Select the date/time this activity was performed. Will be set to time of saving activity if left empty. Must be of a valid ISO8601 format',
+    example: '1991-10-27',
+  })
+  @IsOptional()
+  @IsString()
+  @IsISO8601()
+  date: string;
 }

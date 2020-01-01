@@ -13,6 +13,12 @@ import {
   BadRequestException,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiQuery,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiHeader,
+} from '@nestjs/swagger';
 
 import { AuthGuard } from '@nestjs/passport';
 import { ActivitiesService } from './activities.service';
@@ -23,11 +29,35 @@ import { MongoIdDTO } from './dto/mongo-id.dto';
 import { UpdateActivityDTO } from './dto/update-activity.dto';
 import { Activity } from './activity.model';
 
+@ApiBearerAuth()
 @Controller('activities')
 @UseFilters(BadRequestFilter)
 export class ActivitiesController {
   constructor(private activitiesService: ActivitiesService) {}
 
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Auth token with Bearer',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Indicates the request for activities completed successfully.',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Fetch successful' },
+        statusCode: { type: 'number', example: 200 },
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            // example:,
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @UseGuards(AuthGuard('jwt'))
   @Get()
   async findActivities(
@@ -44,6 +74,7 @@ export class ActivitiesController {
       ...data,
     };
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('/:id')
   async findActivity(@Request() req, @Param() mongoIdDTO: MongoIdDTO) {

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
-import { MulterModule } from '@nestjs/platform-express';
 
 import { ActivitiesModule } from './activities/activities.module';
 import { MongooseModule } from '@nestjs/mongoose';
