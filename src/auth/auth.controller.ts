@@ -34,4 +34,23 @@ export class AuthController {
   async profile(@Request() req) {
     return this.authService.profile(req.user);
   }
+
+  @Post('requestPasswordReset')
+  async requestPasswordReset(@Body('email') email: string) {
+    return this.authService.requestPasswordReset(email);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('passwordReset')
+  async passwordReset(@Body('password') pass: string, @Request() req) {
+    const user = await this.authService.passwordReset(pass, req.user);
+    const obj = { ...user._doc, id: user._doc._id };
+    const { password, _id, accounts, ...data } = obj;
+
+    return {
+      statusCode: 200,
+      message: 'Password reset successful',
+      data,
+    };
+  }
 }
