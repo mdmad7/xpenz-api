@@ -23,6 +23,8 @@ import {
   Post,
   UseInterceptors,
   UploadedFile,
+  Get,
+  Res,
 } from '@nestjs/common';
 import { MongoIdDTO } from 'src/activities/dto/mongo-id.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
@@ -80,7 +82,7 @@ export class UsersController {
   @UseInterceptors(
     FileInterceptor('avatar', {
       storage: diskStorage({
-        destination: './uploads/avatars/tmp',
+        destination: './dist/uploads/avatars/tmp',
         filename: (req, file, cb) => {
           return cb(null, `${req.user.id}${extname(file.originalname)}`);
         },
@@ -131,6 +133,11 @@ export class UsersController {
       message: 'Password reset successful',
       data,
     };
+  }
+
+  @Get('/uploads/avatars/:id')
+  async serverAvatars(@Param('id') id, @Res() res) {
+    await res.sendFile(id, { root: './dist/uploads/avatars' });
   }
 
   @UseGuards(AuthGuard('jwt'))

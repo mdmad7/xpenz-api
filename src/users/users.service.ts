@@ -39,13 +39,13 @@ export class UsersService {
         return sharp(file)
           .resize(size, size)
           .toFormat('jpeg')
-          .toFile(`./uploads/avatars/${id}-${size}.jpeg`);
+          .toFile(`./dist/uploads/avatars/${id}-${size}.jpeg`);
       }),
     );
 
     return await this.userModel.findByIdAndUpdate(
       { _id: id },
-      { avatar: `/uploads/avatars/${id}-${640}.jpeg` },
+      { avatar: `users/uploads/avatars/${id}-${640}.jpeg` },
       { new: true },
     );
   }
